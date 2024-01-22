@@ -74,6 +74,6 @@ class CasesManager:
             result = await database.fetch_all(query)
             return result
         except Exception as e:
-            error_message = f"Failed to get cases for agent {current_user["id"]}: {str(e)}"
+            error_message = f"Failed to get cases for agent {current_user['id']}: {str(e)}"
             print(error_message)
             raise HTTPException(status_code=500, detail=error_message)
