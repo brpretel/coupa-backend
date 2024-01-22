@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from contextlib import asynccontextmanager
 from db import database
 from api_calls.routes import api_router
 from starlette.middleware.cors import CORSMiddleware
@@ -20,12 +21,12 @@ app.add_middleware(
 )
 
 
-@app.on_event("startup")
-async def startup():
+@asynccontextmanager
+async def app_lifespan(app: FastAPI):
+    # Lógica antes de que la app comience
     await database.connect()
-
-
-@app.on_event("shutdown")
-async def shutdown():
+    yield
+    # Lógica cuando la app se está cerrando
     await database.disconnect()
+
 
