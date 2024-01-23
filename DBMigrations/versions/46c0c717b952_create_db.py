@@ -1,8 +1,8 @@
-"""db version 1 table creation
+"""create db
 
-Revision ID: bd68cbf57a66
+Revision ID: 46c0c717b952
 Revises: 
-Create Date: 2023-12-19 16:49:01.844991
+Create Date: 2024-01-22 19:26:55.951584
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'bd68cbf57a66'
+revision: str = '46c0c717b952'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -39,14 +39,15 @@ def upgrade() -> None:
     op.create_table('cases',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.Column('case_vertical_id', sa.Integer(), nullable=False),
+    sa.Column('case_vertical', sa.String(length=60), nullable=False),
     sa.Column('case_topic', sa.String(length=60), nullable=False),
     sa.Column('case_status', sa.Enum('open', 'closed_unresolved', 'closed_resolved', 'escalated', name='casestatus'), server_default='open', nullable=False),
     sa.Column('creation_date', sa.Date(), nullable=False),
     sa.Column('solution_score', sa.Float(), server_default='0.0', nullable=False),
     sa.Column('description', sa.Text(), nullable=True),
     sa.Column('resources', sa.Text(), nullable=True),
-    sa.ForeignKeyConstraint(['case_vertical_id'], ['verticals.id'], ),
+    sa.Column('salesforce_case_number', sa.Integer(), nullable=False),
+    sa.Column('jira_escalation_number', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
