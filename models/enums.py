@@ -1,4 +1,3 @@
-from builtins import str
 from enum import Enum
 
 """
@@ -18,8 +17,13 @@ class UserRole(str, Enum):
     agent = "agent"
 
 
+"""
+Case defined enums
+"""
+
+
 class CaseStatus(str, Enum):
-    open = "open"
-    closed_unresolved = "closed_unresolved"
-    closed_resolved = "closed_resolved"
-    escalated = "escalated"
+    open = "Open"
+    closed_unresolved = "Closed Unresolved"
+    closed_resolved = "Closed Resolved"
+    escalated = "Escalated"
