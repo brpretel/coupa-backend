@@ -3,7 +3,7 @@ from models.enums import CaseStatus
 
 
 class CaseCreateRequest(BaseModel):
-    case_topic: str
+    case_type: str
     case_status: CaseStatus
     description: str
     resources: str
