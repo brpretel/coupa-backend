@@ -1,6 +1,6 @@
 import sqlalchemy
 from db import metadata
-from models.enums import UserStatus, UserRole
+from schemas.request.user_input_data import UserStatus, UserRole
 
 """
 users: Table contains structure for users

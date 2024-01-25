@@ -1,9 +1,8 @@
 import sqlalchemy
 from fastapi import HTTPException
 from db import database
-from managers.auth import AuthManager
-from models import case, vertical
-from models.enums import UserRole
+from models import user
+from schemas.request.user_input_data import UserRole
 from passlib.context import CryptContext
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -12,102 +11,51 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 class MasterManager:
 
     @staticmethod
-    async def register_master(password, user_data):
-        user_data["user_role"] = UserRole.master
-        if password == "coupaadmin123456":
-            return await AuthManager.register(user_data)
-        else:
-            raise HTTPException(400, "invalid token")
-
-    @staticmethod
-    async def create_case(product_data):
+    async def update_role(user_id, new_role):
         try:
-            id_ = await database.execute(case.insert().values(product_data))
-        except:
-            return None
-        return await database.fetch_one(case.select().where(case.c.id == id_))
+            # Update the user's role, search by user_id
+            query = user.update().where(user.c.id == user_id).values(user_role=new_role)
+            await database.execute(query)
 
-    @staticmethod
-    async def get_verticals():
-        try:
-            # Search all verticals
-            query = sqlalchemy.select([vertical])
-            result = await database.fetch_all(query)
-            return result
+            # Fetch the updated user data to return
+            updated_user_query = sqlalchemy.select([user.c.id, user.c.username, user.c.user_role]).where(user.c.id == user_id)
+            updated_user = await database.fetch_one(updated_user_query)
+            return updated_user
+
         except Exception as e:
-            error_message = f"Failed to get verticals: {str(e)}"
+            error_message = f"Failed to update user role: {str(e)}, check if user exists"
             print(error_message)
             raise HTTPException(status_code=500, detail=error_message)
 
     @staticmethod
-    async def create_vertical(vertical_name):
+    async def update_status(user_id, new_status):
         try:
-            # Check if vertical exists
-            check_query = sqlalchemy.select([vertical]).where(vertical.c.vertical_name == vertical_name)
-            existing_vertical = await database.fetch_one(check_query)
-            if existing_vertical:
-                raise HTTPException(status_code=400, detail="Vertical already exists")
+            # Update the user's status, search by user_id
+            query = user.update().where(user.c.id == user_id).values(status=new_status)
+            await database.execute(query)
 
-            # Insert new vertical
-            query = sqlalchemy.insert(vertical).values(vertical_name=vertical_name)
-            vertical_id = await database.execute(query)
+            # Fetch the updated user data to return
+            updated_user_query = sqlalchemy.select([user.c.id, user.c.username, user.c.status]).where(
+                user.c.id == user_id)
+            updated_user = await database.fetch_one(updated_user_query)
+            return updated_user
 
-            # Returns created vertical
-            select_query = sqlalchemy.select([vertical]).where(vertical.c.id == vertical_id)
-            new_vertical = await database.fetch_one(select_query)
-            return new_vertical
-
-        except HTTPException as http_exc:
-            raise http_exc
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Failed to create vertical: {str(e)}")
-
-    @staticmethod
-    async def update_vertical(vertical_id, vertical_name):
-        try:
-            # Check if vertical exists by ID
-            check_query = sqlalchemy.select([vertical]).where(vertical.c.id == vertical_id)
-            check_result = await database.fetch_one(check_query)
-            if check_result is None:
-                raise HTTPException(status_code=404, detail="Vertical not found")
-
-            # Updates Vertical Name
-            update_query = sqlalchemy.update(vertical).where(vertical.c.id == vertical_id).values(
-                vertical_name=vertical_name)
-            await database.execute(update_query)
-
-            # Returns updated vertical
-            updated_vertical_query = sqlalchemy.select([vertical]).where(vertical.c.id == vertical_id)
-            updated_vertical = await database.fetch_one(updated_vertical_query)
-            return updated_vertical
-
-        except HTTPException as http_exc:
-            raise http_exc
-        except Exception as e:
-            error_message = f"Failed to update vertical: {str(e)}"
-            raise HTTPException(status_code=500, detail=error_message)
-
-    @staticmethod
-    async def delete_vertical(vertical_id):
-        try:
-            # Check if vertical exists by ID
-            check_query = sqlalchemy.select([vertical]).where(vertical.c.id == vertical_id)
-            check_result = await database.fetch_one(check_query)
-            if check_result is None:
-                raise HTTPException(status_code=404, detail="Vertical not found")
-
-            # Delete Vertical
-            delete_query = sqlalchemy.delete(vertical).where(vertical.c.id == vertical_id)
-            await database.execute(delete_query)
-
-            return {"message": "Vertical deleted successfully", "vertical_id": vertical_id}
-
-        except HTTPException as http_exc:
-            raise http_exc
-        except Exception as e:
-            error_message = f"Failed to delete vertical: {str(e)}"
+            error_message = f"Failed to update user status: {str(e)}, check if user exists"
             print(error_message)
             raise HTTPException(status_code=500, detail=error_message)
+
+    """
+    @staticmethod
+    async def update_user(user_data):
+        try:
+            query = update(usuario).where(usuario.c.user_id == user_data["user_id"]).values(role=user_data["role"],
+                                                                                            status=user_data["status"])
+            await database.execute(query)
+            return await database.fetch_one(usuario.select().where(usuario.c.user_id == user_data["user_id"]))
+        except Exception as e:
+            print("Error updating user: ", e)
+    """
 
     """Need to generate method to CREATE, UPDATE AND DELETE
     user_vertical options, needs to write in DB table"""

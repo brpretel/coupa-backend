@@ -30,16 +30,16 @@ class CasesManager:
             if user_vertical_result:
                 user_vertical = user_vertical_result['user_vertical']
             else:
-                raise HTTPException(status_code=404, detail="User not found")
+                return None
 
             case_data_dict = case_data.dict()
             case_data_dict["user_id"] = user_id
             case_data_dict["case_vertical"] = user_vertical
             case_data_dict["creation_date"] = date.today()
-
             query = case.insert().values(**case_data_dict)
             last_record_id = await database.execute(query)
             return {**case_data_dict, "id": last_record_id}
+
         except Exception as e:
             error_message = f"Failed to create case: {str(e)}"
             print(error_message)

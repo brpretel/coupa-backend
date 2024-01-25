@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from managers.auth import AuthManager
-from models.enums import UserRole
-from models.schemas.request.case_input_data import CaseCreateRequest
+from schemas.request.user_input_data import UserRole
+from schemas.request.case_input_data import CaseCreateRequest
 from managers.cases import CasesManager
 
 router = APIRouter(prefix="/cases", tags=["cases"], responses={401: {"user": "Not authorized"}})
@@ -28,7 +28,7 @@ async def create_case(case_data: CaseCreateRequest, current_user: dict = Depends
         result = await CasesManager.create_case(case_data, current_user)
         return result
     else:
-        raise HTTPException(status_code=403, detail="Only master users can create cases")
+        raise HTTPException(status_code=403, detail="Only Tech Support Users can create new cases")
 
 
 @router.get("/show_agent_cases/", description="Allows agents to get their cases")

@@ -4,6 +4,7 @@ from db import database
 from api_calls.routes import api_router
 from starlette.middleware.cors import CORSMiddleware
 
+
 @asynccontextmanager
 async def app_lifespan(app: FastAPI):
     await database.connect()
@@ -16,12 +17,11 @@ async def app_lifespan(app: FastAPI):
 app = FastAPI(lifespan=app_lifespan)
 app.include_router(api_router)
 
-
 """origins = [
     "http://localhost:3000",
 ]"""
 
-# Configurar CORS
+# Configure CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

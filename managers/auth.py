@@ -2,15 +2,13 @@ import jwt
 from typing import Optional
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from decouple import config
 from fastapi import Request
-
 from db import database
 from models import user
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl="token")
 
 
@@ -42,9 +40,9 @@ class AuthManager:
         user_role = user["user_role"]
         encode = {"sub": user_id, "name": username, "user_role": user_role}
         if expires_delta:
-            expire = datetime.utcnow() + expires_delta
+            expire = datetime.now(timezone.utc) + timedelta(minutes=30)
         else:
-            expire = datetime.utcnow() + timedelta(minutes=30)
+            expire = datetime.now(timezone.utc) + timedelta(minutes=30)
         encode.update({"exp": expire})
         return jwt.encode(encode, config("SECRET_KEY"), algorithm="HS256")
 

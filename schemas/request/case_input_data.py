@@ -1,7 +1,15 @@
 from pydantic import BaseModel
-from models.enums import CaseStatus
+from enum import Enum
 
 
+class CaseStatus(str, Enum):
+    open = "Open"
+    closed_unresolved = "Closed Unresolved"
+    closed_resolved = "Closed Resolved"
+    escalated = "Escalated"
+
+
+# Create Case Schema
 class CaseCreateRequest(BaseModel):
     case_type: str
     case_status: CaseStatus

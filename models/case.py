@@ -1,6 +1,6 @@
 import sqlalchemy
 from db import metadata
-from models.enums import CaseStatus
+from schemas.request.case_input_data import CaseStatus
 
 """
 cases: Table contains structure for cases
