@@ -3,22 +3,22 @@ from enum import Enum
 
 
 class UserStatus(str, Enum):
-    active = "Active"
-    inactive = "Inactive"
-    pending = "Pending"
+    active = "active"
+    inactive = "inactive"
+    pending = "pending"
 
 
 class UserRole(str, Enum):
-    master = "Master"
-    admin = "Admin"
-    agent = "Agent"
+    master = "master"
+    admin = "admin"
+    agent = "agent"
 
 
 class UserVertical(str, Enum):
-    payments = "Payments"
-    procurement = "Procurement"
-    platform = "Platform"
-    sourcing = "Sourcing"
+    payments = "payments"
+    procurement = "procurement"
+    platform = "platform"
+    sourcing = "sourcing"
 
 
 """
